@@ -19,7 +19,7 @@ const MerchantAuth = () => {
     console.log('Form data:', formData); // Debug
     try {
       const endpoint = isSignup ? '/signup' : '/login';
-      const res = await axios.post(`http://localhost:5000/api/auth${endpoint}`, formData);
+      const res = await axios.post(`https://haveit-p7ev.onrender.com/api/auth${endpoint}`, formData);
       localStorage.setItem('token', res.data.token);
       navigate('/merchant-form');
     } catch (err) {
