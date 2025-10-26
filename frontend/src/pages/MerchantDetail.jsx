@@ -101,7 +101,7 @@ const MerchantDetail = () => {
   useEffect(() => {
     document.body.style.backgroundColor = SUBTLE_GRAY;
     
-    axios.get(`http://localhost:5000/api/merchants/${id}`)
+    axios.get(`https://haveit-p7ev.onrender.com/api/merchants/${id}`)
       .then(res => setMerchant(res.data))
       .catch(err => console.error(err));
       
