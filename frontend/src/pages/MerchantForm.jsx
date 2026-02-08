@@ -28,7 +28,7 @@ const MerchantForm = () => {
     console.log(`${pair[0]}: ${pair[1]}`);
   }
   try {
-    await axios.post('http://localhost:5000/api/merchants/create', formDataToSend, {
+    await axios.post('https://haveit-p7ev.onrender.com/api/merchants/create', formDataToSend, {
       headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
     });
     setSubmitted(true);

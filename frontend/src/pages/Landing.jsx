@@ -10,7 +10,7 @@ const Landing = () => {
   const [merchants, setMerchants] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/merchants')
+    axios.get('https://haveit-p7ev.onrender.com/api/merchants')
       .then(res => setMerchants(res.data))
       .catch(err => console.error(err));
   }, []);
