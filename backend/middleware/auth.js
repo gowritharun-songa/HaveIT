@@ -1,7 +1,8 @@
-const jwt = require('jsonwebtoken');
-const Merchant = require('../models/Merchant');
 
-module.exports = async (req, res, next) => {
+import jwt from 'jsonwebtoken';
+import Merchant from '../models/Merchant.js';
+
+const auth = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
@@ -16,3 +17,5 @@ module.exports = async (req, res, next) => {
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };
+
+export default auth;

@@ -1,7 +1,9 @@
-const express = require('express');
-const multer = require('multer');
-const Merchant = require('../models/Merchant');
-const auth = require('../middleware/auth');
+
+import express from 'express';
+import multer from 'multer';
+import Merchant from '../models/Merchant.js';
+import auth from "../middleware/auth.js";
+
 const router = express.Router();
 
 // Multer for multiple images
@@ -57,4 +59,4 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
