@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const MerchantSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -7,11 +7,12 @@ const MerchantSchema = new mongoose.Schema({
   description: { type: String, default: '' },
   howTheyCharge: { type: String, default: '' },
   specialities: { type: String, default: '' },
-  contactNumber: { type: String, default: '' }, // Remove required: true
+  contactNumber: { type: String, default: '' },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // Add password
+  password: { type: String, required: true },
   images: [{ type: String, default: '' }],
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Merchant', MerchantSchema);
+const Merchant= mongoose.models.Merchant || mongoose.model('Merchant', MerchantSchema);
+export default Merchant;

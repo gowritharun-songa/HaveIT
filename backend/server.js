@@ -1,11 +1,18 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const multer = require('multer');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import multer from 'multer';
+import path from 'path';
+import mongoose from 'mongoose';
 
-dotenv.config();
+import authRouter from './routes/auth.js';
+import merchantRouter from './routes/merchants.js';
+
+import connectDB from "./config/db.js";
+
+dotenv.config({
+  silent: true,
+});
 
 const app = express();
 
@@ -25,14 +32,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
-
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/merchants', require('./routes/merchants'));
+app.use('/api/auth', authRouter);
+app.use('/api/merchants', merchantRouter);
 
 const PORT = process.env.PORT || 5050;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log("Server started on PORT", PORT);
+  })
+})
