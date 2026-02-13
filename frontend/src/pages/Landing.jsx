@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Hero from '../components/Hero';
-import ExploreSection from '../components/ExploreSection';
+
 import Card from '../components/Card';
 import Footer from '../components/Footer';
 import '../styles/Landing.css';
+
+import api from '../lib/axios.js'
 
 const Landing = () => {
   const [merchants, setMerchants] = useState([]);
 
   useEffect(() => {
-    axios.get('https://haveit-p7ev.onrender.com/api/merchants')
-      .then(res => setMerchants(res.data))
-      .catch(err => console.error(err));
-  }, []);
+    const fetchMerchants = async () => {
+      const {data} = await api.get('/merchants');
+      setMerchants(data);
+    }
+    fetchMerchants();
+  }, [])
 
   return (
     <>
