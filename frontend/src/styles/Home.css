@@ -1,0 +1,42 @@
+/* Main Content Section */
+.main-content {
+    padding: 5rem 2rem;
+    background: radial-gradient(125% 125% at 50% 10%, #fff 40%, #63e 100%);
+    min-height: 50vh;
+  }
+  
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .section-content {
+    width: 100%;
+  }
+  
+  .title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-deep-purple);
+    margin: 0 0 4rem 0;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 3rem 1.5rem;
+    }
+  
+    .title {
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .title {
+      font-size: 2rem;
+    }
+  }

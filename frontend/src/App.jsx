@@ -5,6 +5,8 @@ import MerchantAuth from './pages/MerchantAuth';
 import MerchantForm from './pages/MerchantForm';
 import MerchantDetail from './pages/MerchantDetail';
 
+import './App.css';
+
 const App = () => {
   return (
     <BrowserRouter>
