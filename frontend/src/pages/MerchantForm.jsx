@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/MerchantForm.css'
 import api from '../lib/axios.js'
+import toast from 'react-hot-toast'
 
 const MerchantForm = () => {
   const [formData, setFormData] = useState({
@@ -33,9 +33,10 @@ const MerchantForm = () => {
     });
     console.log(token);
     setSubmitted(true);
+    toast.success("Sucessfully Created");    
   } catch (err) {
     console.error('Axios error:', err);
-    alert('Error submitting form: ' + (err.message || 'Unknown error'));
+    toast.error("Unable to Create");
   }
 };
 
@@ -47,7 +48,7 @@ const MerchantForm = () => {
     return (
       <div className="confirmation-container">
         <div className="confirmation-message">
-          <h2 className="confirmation-title">📞 Clients can consult with you directly!</h2>
+          <h2 className="confirmation-title">📞Clients can consult with you directly!</h2>
           <p className="confirmation-text">
             Once approved, customers will be able to contact you to discuss custom orders and ask questions about your craft.
           </p>

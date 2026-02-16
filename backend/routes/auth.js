@@ -9,8 +9,8 @@ const router = express.Router();
 router.post('/signup', async (req, res) => {
   try {
     console.log('Request body:', req.body);
-    const { email, password, name, contactNumber } = req.body;
-    if (!email || !password || !name || !contactNumber) {
+    const { email, password, name } = req.body;
+    if (!email || !password || !name) {
       return res.status(400).json({ msg: 'Missing required fields' });
     }
     let merchant = await Merchant.findOne({ email });
@@ -18,12 +18,12 @@ router.post('/signup', async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
+    
     merchant = new Merchant({
       name,
       email,
       password: hashedPassword,
-      contactNumber,
+      contactNumber: '',
       businessName: '',
       field: '',
       description: '',

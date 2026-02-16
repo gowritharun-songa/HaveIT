@@ -1,23 +1,26 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../lib/axios.js';
-import '../styles/MerchantAuth.css';
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import api from "../lib/axios";
+import toast from "react-hot-toast";
 
 const MerchantAuth = () => {
   const [isSignup, setIsSignup] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '', name: '', contactNumber: '' });
+  const [formData, setFormData] = useState({ email: '', password: '', name: ''});
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form data:', formData);
+    // console.log('Form data:', formData);
+    const endpoint = isSignup ? '/signup' : '/login';
     try {
-      const endpoint = isSignup ? '/signup' : '/login';
       const res = await api.post(`/auth${endpoint}`, formData);
       localStorage.setItem('token', res.data.token);
       navigate('/merchant-form');
     } catch (err) {
-      alert(err.response?.data?.msg || 'Error signing up');
+      
+      toast.error(() => `Unable to ${endpoint === isSignup ? "Login": "Sing Up"}`);
+      console.log(err);
+      console.log(err.message);
     }
   };
   
@@ -38,15 +41,7 @@ const MerchantAuth = () => {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="auth-input"
                 required
-              />
-              <input
-                type="tel"
-                placeholder="Contact Number"
-                value={formData.contactNumber}
-                onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
-                className="auth-input"
-                required
-              />
+              />             
             </>
           )}
           
