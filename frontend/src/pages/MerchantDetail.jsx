@@ -5,6 +5,8 @@ import api from "../lib/axios.js";
 
 import toast from "react-hot-toast";
 
+import '../styles/MerchantDetail.css';
+
 
 const MerchantDetail = () => {
   const { id } = useParams();

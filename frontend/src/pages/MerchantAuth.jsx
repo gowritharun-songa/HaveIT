@@ -3,6 +3,8 @@ import { useState } from "react";
 import api from "../lib/axios";
 import toast from "react-hot-toast";
 
+import '../styles/MerchantAuth.css';
+
 const MerchantAuth = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '', name: ''});

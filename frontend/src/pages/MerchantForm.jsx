@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios.js'
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
+
+import '../styles/MerchantForm.css';
 
 const MerchantForm = () => {
   const [formData, setFormData] = useState({

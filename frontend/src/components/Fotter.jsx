@@ -1,5 +1,7 @@
 import { Facebook, Instagram, Twitter, Mail, Heart, Phone } from 'lucide-react';
 
+import '../styles/Fotter.css';
+
 function Footer() {
   return(
     <footer className="footer">

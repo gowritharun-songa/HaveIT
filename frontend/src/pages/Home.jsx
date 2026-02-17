@@ -1,50 +1,58 @@
+import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
+import Footer from '../components/Fotter';          
+import MerchantCard from '../components/MerchantCard';
+import NotFound from '../components/NotFound';
 
-import api from '../lib/axios.js';
-import NotFound from '../components/NotFound.jsx';
-import MerchantCard from '../components/MerchantCard.jsx';
-import { useEffect, useState } from 'react';
-import Footer from '../components/Fotter.jsx';
+import api from '../lib/axios';
+import '../styles/Home.css';                        
 
 function Home() {
-
   const [merchants, setMerchants] = useState([]);
+  const [loading, setLoading] = useState(true);     
 
   useEffect(() => {
-    const fetchMerchants = async() => {
+    const fetchMerchants = async () => {
       try {
-        const responce = await api.get('/merchants');
-        const data = responce.data;
-        console.log(data);
-        setMerchants(data);
-      } catch(error) {
-        console.log("Unable to fetch merchants", error.message);
+        const response = await api.get('/merchants');
+        setMerchants(response.data);
+        console.log("Merchants loaded:", response.data);
+      } catch (error) {
+        console.error("Unable to fetch merchants:", error.message);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
     fetchMerchants();
   }, []);
 
-  return(<>
-    <Navbar />
-    <Hero />
+  return (
+    <>
+      <Navbar />
+      <Hero />
 
-    <section className="main-content">
-      <div className="container">
-        <div className="section-content">
-          <h2 className="title">Featured Merchants</h2>
-            {merchants.length === 0 ? (<NotFound />) : (
-              merchants.map((merchant, index) => (
-                <MerchantCard key={index} merchant={merchant} />
-              ))
-            )}
+      <section className="featured-section">
+        <div className="container">
+          <h2 className="section-title">Featured Merchants</h2>
+
+          {loading ? (
+            <div className="loading">Loading artisans...</div>
+          ) : merchants.length === 0 ? (
+            <NotFound />
+          ) : (
+            <div className="merchants-grid">
+              {merchants.map((merchant) => (
+                <MerchantCard key={merchant._id} merchant={merchant} />
+              ))}
+            </div>
+          )}
         </div>
-      </div>
-    </section>
+      </section>
 
-    <Footer />
-
-  </>)
+      <Footer />
+    </>
+  );
 }
 
 export default Home;

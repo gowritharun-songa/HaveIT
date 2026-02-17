@@ -1,0 +1,104 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(135deg, #2d1b69 0%, #1a0d3d 100%);
+  }
+  
+  .auth-box {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(26, 13, 61, 0.4);
+    width: 100%;
+    max-width: 420px;
+  }
+  
+  .auth-heading {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-deep-purple);
+    margin: 0 0 2rem 0;
+  }
+  
+  .auth-input {
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+    font-size: 1rem;
+    color: var(--color-deep-purple);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
+  }
+  
+  .auth-input:focus {
+    border-color: var(--color-accent-purple);
+    box-shadow: 0 0 0 3px rgba(74, 37, 138, 0.1);
+  }
+  
+  .auth-submit-button {
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    background: linear-gradient(135deg, #4a258a 0%, #5c2fa8 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    box-shadow: 0 5px 15px rgba(74, 37, 138, 0.3);
+  }
+  
+  .auth-submit-button:hover {
+    background: linear-gradient(135deg, #3a1d70 0%, #4a258a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(74, 37, 138, 0.4);
+  }
+  
+  .auth-toggle-text {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    margin: 1.5rem 0 0 0;
+    color: var(--color-deep-purple);
+    font-size: 0.95rem;
+  }
+  
+  .auth-toggle-button {
+    font-family: 'Poppins', sans-serif;
+    background: none;
+    border: none;
+    color: var(--color-accent-purple);
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    padding: 0;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+  }
+  
+  .auth-toggle-button:hover {
+    color: var(--color-deep-purple);
+  }
+  
+  /* Responsive */
+  @media (max-width: 480px) {
+    .auth-box {
+      padding: 2rem 1.5rem;
+    }
+  
+    .auth-heading {
+      font-size: 1.75rem;
+    }
+  }
