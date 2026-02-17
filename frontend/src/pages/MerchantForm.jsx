@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/MerchantForm.css'
+import api from '../lib/axios.js'
+import toast from 'react-hot-toast';
+
+import '../styles/MerchantForm.css';
 
 const MerchantForm = () => {
   const [formData, setFormData] = useState({
@@ -17,24 +19,26 @@ const MerchantForm = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const formDataToSend = new FormData();
-  Object.keys(formData).forEach(key => formDataToSend.append(key, formData[key]));
-  images.forEach(image => formDataToSend.append('images', image));
-  const token = localStorage.getItem('token');
-  console.log('Token:', token);
-  console.log('FormData to send:');
-  for (let pair of formDataToSend.entries()) {
-    console.log(`${pair[0]}: ${pair[1]}`);
+    e.preventDefault();
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach(key => formDataToSend.append(key, formData[key]));
+    images.forEach(image => formDataToSend.append('images', image));
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
+    console.log('FormData to send:');
+    for (let pair of formDataToSend.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
   }
   try {
-    await axios.post('https://haveit-p7ev.onrender.com/api/merchants/create', formDataToSend, {
-      headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+    await api.post('merchants/create', formDataToSend, {
+      headers: {  Authorization: `Bearer ${token}` }
     });
+    console.log(token);
     setSubmitted(true);
+    toast.success("Sucessfully Created");    
   } catch (err) {
     console.error('Axios error:', err);
-    alert('Error submitting form: ' + (err.message || 'Unknown error'));
+    toast.error("Unable to Create");
   }
 };
 
@@ -46,7 +50,7 @@ const MerchantForm = () => {
     return (
       <div className="confirmation-container">
         <div className="confirmation-message">
-          <h2 className="confirmation-title">📞 Clients can consult with you directly!</h2>
+          <h2 className="confirmation-title">📞Clients can consult with you directly!</h2>
           <p className="confirmation-text">
             Once approved, customers will be able to contact you to discuss custom orders and ask questions about your craft.
           </p>

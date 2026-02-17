@@ -1,60 +1,113 @@
-
 import express from 'express';
 import multer from 'multer';
+import jwt from 'jsonwebtoken';
 import Merchant from '../models/Merchant.js';
-import auth from "../middleware/auth.js";
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Multer for multiple images
 const upload = multer({ dest: 'uploads/' });
 
-// Create Merchant (protected)
-router.post('/create', auth, upload.array('images', 2), async (req, res) => {
+router.post('/create', upload.array('images', 1), async (req, res) => {
   try {
     console.log('Request body:', req.body);
-    console.log('Files received:', req.files); // Log all file details
+    console.log('Files received:', req.files || 'None');
+    
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ msg: 'No token, authorization denied' });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const merchantId = decoded.id;
+    
+    let merchant = await Merchant.findById(merchantId);
+    const isCreated = !merchant;
+    
+    if (isCreated) {
+      merchant = new Merchant({ _id: merchantId });
+      console.log('Creating new merchant profile');
+    } else {
+      console.log('Updating existing merchant profile');
+    }
+    
+    
     const { businessName, field, description, howTheyCharge, specialities, contactNumber } = req.body;
-    const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
-    console.log('Generated image URLs:', imageUrls); // Log URLs
-
-    const merchant = await Merchant.findById(req.merchant.id);
-    if (!merchant) return res.status(404).json({ msg: 'Merchant not found' });
-
-    merchant.businessName = businessName || merchant.businessName;
-    merchant.field = field || merchant.field;
-    merchant.description = description || merchant.description;
-    merchant.howTheyCharge = howTheyCharge || merchant.howTheyCharge;
-    merchant.specialities = specialities || merchant.specialities;
-    merchant.contactNumber = contactNumber || merchant.contactNumber;
-    merchant.images = imageUrls.length ? imageUrls : merchant.images;
-
+    
+    if (businessName !== undefined) merchant.businessName = businessName;
+    if (field !== undefined) merchant.field = field;
+    if (description !== undefined) merchant.description = description;
+    if (howTheyCharge !== undefined) merchant.howTheyCharge = howTheyCharge;
+    if (specialities !== undefined) merchant.specialities = specialities;
+    if (contactNumber !== undefined) merchant.contactNumber = contactNumber;
+    
+    if (req.files?.length) {
+      const newImageUrls = req.files.map(file => `/uploads/${file.filename}`);
+      merchant.images = [...(merchant.images || []), ...newImageUrls];
+      console.log('Added new images:', newImageUrls);
+    }
+    
     await merchant.save();
-    console.log('Merchant saved with images:', merchant.images);
-    res.json({ msg: 'Merchant updated successfully', images: merchant.images });
+    console.log('Merchant saved successfully. Images:', merchant.images);
+    
+    res.json({
+      msg: isCreated ? 'Merchant profile created successfully!' : 'Merchant profile updated successfully!',
+      merchant
+    });
   } catch (err) {
-    console.error('Create error:', err);
-    res.status(500).json({ msg: 'Server error' });
+    console.error('Create/Update error:', err);
+    res.status(500).json({ msg: 'Server error', error: err.message });
   }
 });
 
-// Get all merchants
+
+router.patch('/me', auth, upload.array('images', 1), async (req, res) => {
+  try {
+    console.log('Update request body:', req.body);
+    console.log('Files received:', req.files || 'None');
+    
+    const merchant = req.merchant;
+    
+    const updates = ['businessName', 'field', 'description', 'howTheyCharge', 'specialities', 'contactNumber'];
+    updates.forEach(key => {
+      if (req.body[key] !== undefined) {
+        merchant[key] = req.body[key];
+      }
+    });
+    
+    if (req.files?.length) {
+      const newImageUrls = req.files.map(file => `/uploads/${file.filename}`);
+      merchant.images = [...(merchant.images || []), ...newImageUrls];
+    }
+    
+    await merchant.save();
+    console.log('Merchant updated. Images:', merchant.images);
+    
+    res.json({ msg: 'Merchant profile updated successfully', merchant });
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).json({ msg: 'Server error', error: err.message });
+  }
+});
+
+
 router.get('/', async (req, res) => {
   try {
-    const merchants = await Merchant.find().select('-contactNumber -password'); // Exclude sensitive fields
+    const merchants = await Merchant.find().select('-contactNumber');
     res.json(merchants);
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    console.error('Get all error:', err);
+    res.status(500).json({ msg: 'Server error' })
   }
 });
 
-// Get single merchant
 router.get('/:id', async (req, res) => {
   try {
-    const merchant = await Merchant.findById(req.params.id).select('-contactNumber -password');
+    const merchant = await Merchant.findById(req.params.id);
     if (!merchant) return res.status(404).json({ msg: 'Merchant not found' });
     res.json(merchant);
   } catch (err) {
+    console.error('Get single error:', err);
     res.status(500).json({ msg: 'Server error' });
   }
 });

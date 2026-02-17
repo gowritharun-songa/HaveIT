@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;600;700&display=swap');
+
+/* Global Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* CSS Variables */
+:root {
+  --color-deep-purple: #1a0d3d;
+  --color-accent-purple: #4a258a;
+  --color-lavender: #8e24aa;
+  --color-subtle-gray: #757575;
+  --color-light-bg: #fdfdff;
+  --color-white: #ffffff;
+}

@@ -1,156 +1,96 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Camera } from 'lucide-react'; // Import the Camera icon
+import { ArrowLeft, Camera } from 'lucide-react';
+import api from "../lib/axios.js";
+
+import toast from "react-hot-toast";
+
+import '../styles/MerchantDetail.css';
+
 
 const MerchantDetail = () => {
   const { id } = useParams();
   const [merchant, setMerchant] = useState(null);
   const navigate = useNavigate();
 
-  // --- Color Palette ---
-  const DEEP_PURPLE = '#1a0d3d';    
-  const ACCENT_PURPLE = '#4a258a';  
-  const WHITE = '#ffffff';
-  const SUBTLE_GRAY = '#e5e7eb';    
-  const TEXT_LIGHT = '#707070';     
-  
-  // --- Simplified Style Objects ---
-  const styles = {
-    // 1. Container (Centered and padded)
-    container: {
-      maxWidth: '900px', // Smaller max-width
-      margin: '2rem auto',
-      padding: '0 1rem',
-      fontFamily: "'Roboto', sans-serif",
-    },
-    // 2. Back Button
-    backButton: {
-      backgroundColor: ACCENT_PURPLE,
-      color: WHITE,
-      padding: '0.6rem 1.5rem',
-      border: 'none',
-      borderRadius: '6px',
-      fontSize: '1rem',
-      cursor: 'pointer',
-      marginBottom: '1.5rem',
-      transition: 'background-color 0.3s',
-    },
-    // 3. Card Layout (Clean, simplified)
-    card: {
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: WHITE,
-      borderRadius: '12px',
-      padding: '2rem',
-      boxShadow: `0 10px 20px rgba(26, 13, 61, 0.1)`, 
-    },
-    // 4. Image/Placeholder Wrapper (Flex to put image/icon beside details on desktop)
-    contentWrapper: {
-      display: 'flex',
-      flexDirection: 'column', // Stacked by default (mobile)
-      gap: '2rem',
-    },
-    // 5. Placeholder Style
-    placeholder: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      height: '200px',
-      backgroundColor: SUBTLE_GRAY,
-      borderRadius: '8px',
-      color: TEXT_LIGHT,
-    },
-    // 6. Typography
-    title: {
-      fontFamily: "'Poppins', sans-serif",
-      fontSize: '2rem',
-      fontWeight: '700',
-      color: DEEP_PURPLE,
-      marginBottom: '0.5rem',
-    },
-    field: {
-      display: 'inline-block',
-      backgroundColor: ACCENT_PURPLE,
-      color: WHITE,
-      padding: '0.3rem 0.8rem',
-      borderRadius: '4px',
-      fontSize: '0.9rem',
-      fontWeight: '500',
-      marginBottom: '1rem',
-    },
-    description: {
-      fontSize: '1rem',
-      lineHeight: '1.6',
-      color: TEXT_LIGHT,
-      marginBottom: '1.5rem',
-    },
-    info: {
-      fontSize: '0.95rem',
-      marginBottom: '0.5rem',
-      paddingLeft: '8px',
-      borderLeft: `2px solid ${ACCENT_PURPLE}`,
-    },
-    infoStrong: {
-      color: DEEP_PURPLE,
-      fontWeight: '600',
-    },
-  };
-
   useEffect(() => {
-    document.body.style.backgroundColor = SUBTLE_GRAY;
     
-    axios.get(`https://haveit-p7ev.onrender.com/api/merchants/${id}`)
-      .then(res => setMerchant(res.data))
-      .catch(err => console.error(err));
-      
-    return () => {
-      document.body.style.backgroundColor = ''; 
-    };
+    const fetchRecord = async() => {
+      try {
+        const responce = await api.get(`/merchants/${id}`);
+        const data = responce.data;
+        setMerchant(data);
+      } catch(error) {
+        console.log("Couldn't fetch the merchant", error.message);
+        toast.error("Merchant not Found");
+      }
+    }
+    fetchRecord();
   }, [id]);
 
-  // --- Responsive Logic (Desktop) ---
-  const isDesktop = window.innerWidth >= 768;
-  
-  const desktopWrapperStyle = isDesktop ? { 
-    flexDirection: 'row', // Horizontal layout on desktop
-  } : {};
-  
-  const desktopPlaceholderStyle = isDesktop ? { 
-    flexShrink: 0, 
-    width: '300px', // Fixed width for image column
-  } : {};
+  if (!merchant) {
+    return (
+      <div className="detail-loading">
+        Loading...
+      </div>
+    );
+  }
 
-
-  if (!merchant) return <div style={{ textAlign: 'center', padding: '3rem', fontSize: '1.5rem', color: ACCENT_PURPLE }}>Loading...</div>;
+  const hasImages = merchant.images && merchant.images.length > 0;
+  const mainImage = hasImages ? merchant.images[0] : null;
+  const thumbnailImages = hasImages ? merchant.images.slice(1) : [];
 
   return (
-    <div style={styles.container}>
-      <button onClick={() => navigate('/')} style={styles.backButton}>
-        Back
+    <div className="detail-container">
+      <button onClick={() => navigate('/')} className="detail-back-button">
+        <ArrowLeft />
+        <span className='back-to-home'>Back</span>
       </button>
-      
-      <div style={styles.card}>
-        <div style={{...styles.contentWrapper, ...desktopWrapperStyle}}>
-          
-          {/* Image Placeholder with Camera Icon */}
-          <div style={{...styles.placeholder, ...desktopPlaceholderStyle}}>
-            <Camera size={48} strokeWidth={1.5} />
+
+      <div className="detail-card">
+        <div className="detail-content-wrapper">
+          <div className="detail-image-section">
+            {hasImages ? (
+              <img
+                src={mainImage}
+                alt={merchant.businessName}
+                className="detail-main-image"
+                loading="lazy"
+              />
+            ) : (
+              <div className="detail-image-placeholder">
+                <Camera size={64} strokeWidth={1.5} />
+              </div>
+            )}
+            {thumbnailImages.length > 0 && (
+              <div className="detail-thumbnails">
+                {thumbnailImages.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`${merchant.businessName} thumbnail ${index + 2}`}
+                    className="detail-thumbnail"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            )}
           </div>
-          
-          {/* Merchant Details */}
-          <div style={{flexGrow: 1}}>
-            <h1 style={styles.title}>{merchant.businessName}</h1>
-            <p style={styles.field}>{merchant.field}</p>
-            <p style={styles.description}>{merchant.description}</p>
-            
-            <p style={styles.info}>
-              <strong style={styles.infoStrong}>How they charge:</strong> {merchant.howTheyCharge}
-            </p>
-            <p style={styles.info}>
-              <strong style={styles.infoStrong}>Specialities:</strong> {merchant.specialities}
-            </p>
+
+          <div className="detail-info-section">
+            <h1 className="detail-title">{merchant.businessName}</h1>
+            <p className="detail-field">{merchant.field}</p>
+            <p className="detail-description">{merchant.description}</p>
+
+            <div className="detail-info-item">
+              <strong>How we charge:</strong> {merchant.howTheyCharge}
+            </div>
+            <div className="detail-info-item">
+              <strong>Specialities:</strong> {merchant.specialities}
+            </div>
+            <div className="detail-info-item">
+              <strong>Contact no:</strong> {merchant.contactNumber}
+            </div>
           </div>
         </div>
       </div>
