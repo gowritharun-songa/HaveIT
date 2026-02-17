@@ -40,6 +40,6 @@ const PORT = process.env.PORT || 5050;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log("Server started on PORT", PORT);
+    console.log(`Server started on PORT", ${PORT}`);
   })
 })
