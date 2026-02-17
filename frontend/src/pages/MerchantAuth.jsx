@@ -20,7 +20,7 @@ const MerchantAuth = () => {
       navigate('/merchant-form');
     } catch (err) {
       
-      toast.error(() => `Unable to ${endpoint === isSignup ? "Login": "Sing Up"}`);
+      toast.error(() => `Unable to ${endpoint === isSignup ? "Sign Up": "Login"}`);
       console.log(err);
       console.log(err.message);
     }
