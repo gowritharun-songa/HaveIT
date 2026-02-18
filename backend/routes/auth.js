@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import  jwt from 'jsonwebtoken';
-import Merchant from '../models/merchant.js';
+import Merchant from '../models/Merchant.js';
 
 const router = express.Router();
 
