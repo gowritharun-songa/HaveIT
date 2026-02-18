@@ -4,9 +4,17 @@ import jwt from 'jsonwebtoken';
 import Merchant from '../models/Merchant.js';
 import auth from '../middleware/auth.js';
 
+// for images
+import axios from "axios";
+import FormData from "form-data";
+
 const router = express.Router();
 
-const upload = multer({ dest: 'uploads/' });
+// const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {fileSize: 5 * 1024 * 1024},
+});
 
 router.post('/create', upload.array('images', 1), async (req, res) => {
   try {
@@ -21,6 +29,7 @@ router.post('/create', upload.array('images', 1), async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const merchantId = decoded.id;
     
+    // find or create merchant
     let merchant = await Merchant.findById(merchantId);
     const isCreated = !merchant;
     
@@ -41,7 +50,7 @@ router.post('/create', upload.array('images', 1), async (req, res) => {
     if (specialities !== undefined) merchant.specialities = specialities;
     if (contactNumber !== undefined) merchant.contactNumber = contactNumber;
     
-    if (req.files?.length) {
+    /*if (req.files?.length) {
       const newImageUrls = req.files.map(file => `/uploads/${file.filename}`);
       merchant.images = [...(merchant.images || []), ...newImageUrls];
       console.log('Added new images:', newImageUrls);
@@ -57,6 +66,53 @@ router.post('/create', upload.array('images', 1), async (req, res) => {
   } catch (err) {
     console.error('Create/Update error:', err);
     res.status(500).json({ msg: 'Server error', error: err.message });
+  }*/
+    
+    let newImageUrls = [];
+
+    if(req.files?.length) {
+      console.log(`Uploading ${req.files.length} images to ImageBB`);
+
+      for(const file of req.files) {
+        try {
+          const form = new FormData();
+          form.append('image', file.buffer, file.originalname);
+
+          const responce = await axios.post(
+            `https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`,
+            form, 
+            { headers: form.getHeaders() }
+          );
+
+          if(responce.data.success) {
+            const url = responce.data.data.url;
+            newImageUrls.push(url);
+            console.log("ImgBB success", url);
+          } else {
+            console.error('ImgBB failed for file', file.orignalname, responce.data);
+          }
+        } catch(uploadErr) {
+          console.error("Img BB uplaod error: ", uploadErr.message);
+        }
+      }
+
+      merchant.images = [... (merchant.images || []), ...newImageUrls];
+      console.log("Added new images: ", newImageUrls);
+    }
+
+    await merchant.save();
+    console.log("Merchant saved");
+
+    res.json({
+      message: isCreated ? "Merchant profile created successfully" : "Merchant profile updated successfully",
+      merchant
+    });
+  } catch(error) {
+    console.error("Create/Update error: ", error);
+    res.status(500).json({
+      message: "Server error", 
+      error: error.message
+    })
   }
 });
 
@@ -75,18 +131,41 @@ router.patch('/me', auth, upload.array('images', 1), async (req, res) => {
       }
     });
     
-    if (req.files?.length) {
-      const newImageUrls = req.files.map(file => `/uploads/${file.filename}`);
+    let newImageUrls = [];
+
+    if(req.files?.length) {
+      for(const file of req.files) {
+        try {
+          const form = new FormData();
+          form.append('image', file.buffer, file.originalname);
+
+          const responce = await axios.post(
+            `https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`,
+            form,
+            { headers: form.getHeaders() }
+          );
+
+          if(responce.data.success) {
+            newImageUrls.push(responce.data.data.urls);
+          }
+        } catch(error) {
+          console.log("Image BB error in /me: ", error.message);
+        }
+      }
       merchant.images = [...(merchant.images || []), ...newImageUrls];
     }
-    
+
     await merchant.save();
-    console.log('Merchant updated. Images:', merchant.images);
-    
-    res.json({ msg: 'Merchant profile updated successfully', merchant });
-  } catch (err) {
-    console.error('Update error:', err);
-    res.status(500).json({ msg: 'Server error', error: err.message });
+
+    res.json({
+      message: "Merchant profile updated successfully", merchant
+    });
+  } catch(error) {
+    console.error("Updated error", error);
+    res.status(500).json({
+      message: "Server error: ", 
+      error: error.message
+    });
   }
 });
 
